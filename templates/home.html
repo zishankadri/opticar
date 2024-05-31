@@ -1,0 +1,158 @@
+{% load compress %}
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    
+    <!-- Tailwind CSS -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+
+    <!-- Font Awesome -->
+    <link href="{% static 'fontawsome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawsome/css/brands.css' %}" rel="stylesheet">
+    <link href="{% static 'fontawsome/css/solid.css' %}" rel="stylesheet">
+
+    <!-- Include Leaflet CSS and JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Include Leaflet Routing Machine CSS and JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script> 
+    
+    {% block head %}{% endblock head %}
+</head>
+
+<body class="font-poppins">
+    <div class="max-w-[1400px] m-auto">
+        <div class="m-auto px-8 flex flex-col items-center">
+            <div class="mt-8 py-4 border rounded-xl shadow-lg px-8">
+
+                <form method="post" class="flex items-center">
+                    {% csrf_token %}
+                    <div class="pr-8">
+                        <span class="text-sm font-medium">PICK-UP DATE & TIME</span>
+                        <div class="flex">
+                            <input type="date" class="block font-light">
+                            <input type="time" class="block font-light">
+                        </div>
+                    </div>
+
+                    <div class="border-l px-8">
+                        <span class="text-sm font-medium">DROP-OFF DATE & TIME</span>
+                        <div class="flex">
+                            <input type="date" class="block font-light">
+                            <input type="time" class="block font-light">
+                        </div>
+                    </div>
+
+                    <div class="border-l px-8 h-full">
+                        <span class="text-sm font-medium">LOCATION</span>
+                        <div class="flex">
+                            <input type="text" name="lat" id="lat_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent">
+                            <input type="text" name="lng" id="lng_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent">
+                            <button type="button" class="btn-primary !py-2">Select</button>
+                        </div>
+                    </div>
+
+                    <button class="w-12 flex justify-center items-center aspect-square rounded-full bg-blue-500 hover:bg-blue-700">
+                        <i class="fa-solid fa-magnifying-glass text-lg text-white"></i>
+                    </button>
+                </form>
+
+                <!-- Map preview -->
+                <div class="map-container w-full rounded-xl overflow-hidden my-4 border border-slate-500">
+                    <!-- Map container -->
+                    <div id="map" style="height: 400px;"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="px-16 py-8 flex flex-wrap gap-4">
+            {% for car in car_list %}
+            <div class="flex flex-col border w-[400px] p-4 rounded-xl">
+                <div class="h-40 max-h-40">
+                    <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
+                </div>
+                <div class="flex justify-between pt-2">
+                    <h2 class="font-medium">{{car.name}}</h2>
+                    <span class="font-medium">
+                        ${{car.price}}
+                        <span class="text-sm text-slate-500">/hour</span>
+                    </span>
+                </div>
+                <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
+                    {{car.address}} 
+                </p>
+                {% if car.distance %}
+                <span class="font-medium pt-2">
+                    <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|floatformat:2 }}
+                    <!-- <span class="text-sm text-slate-500">(12 min)</span> -->
+                </span>
+                {% endif %}
+
+                <div class="flex-1 flex items-end">
+                    <button class="flex-1 btn-primary mt-4">Book Now</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+
+    <script>
+        const lat_input = document.getElementById("lat_input");
+        const lng_input = document.getElementById("lng_input");
+        {% comment %} const destination_cord_field = document.getElementById("id_destination_cord"); {% endcomment %}
+
+        let origin_cord = [4.2105,101.9758]
+        // let destination_cord = [-34.66,-58.43]
+
+        var map = L.map('map').setView([-34.66,-58.43], 4);
+
+        {% comment %} if (lat_input.value){
+            origin_cord = [lat_input, lng_input]
+        }
+        if (destination_cord_field.value){
+            destination_cord = destination_cord_field.value.split(',');
+        }  {% endcomment %}
+        // Create markers
+        var marker_origin = L.marker(origin_cord, { draggable: true }).addTo(map);
+        // var marker_destination = L.marker(destination_cord, { draggable: true }).addTo(map);
+        marker_origin.bindPopup("Origin").openPopup();
+        // marker_destination.bindPopup("Destination").openPopup();
+
+        origin_cord.value = marker_origin.getLatLng();
+        // destination_cord.value = marker_destination.getLatLng();
+
+        map.fitBounds([marker_origin.getLatLng()])
+        map.setView(map.getCenter(), 4);  // Change zoom of the map
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        function updateRoute() {
+            lat_input.value = marker_origin.getLatLng()['lat']
+            lng_input.value = marker_origin.getLatLng()['lng'];
+
+            console.log("origin_cord" + "," + lat_input.value + lat_input.value);
+        }
+        
+        // Add event listeners for marker drag
+        marker_origin.on('drag', updateRoute);
+        
+        // Initial route update
+        updateRoute();
+    </script>
+
+</body>
