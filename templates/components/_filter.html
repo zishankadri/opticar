@@ -1,0 +1,97 @@
+<!-- <div class="flex flex-col gap-16 items-center w-full "> -->
+    <div method="post" id="filter-form" class="w-full flex flex-col justify-center lg:max-w-[80ch] border-t border-slate-200/10">
+        {% csrf_token %}
+        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+            <div class="top-bar flex justify-between items-center cursor-pointer">
+                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                    CAR TYPE
+                </h2>
+                <i class="arrow fa-solid fa-chevron-down text-brand"></i>
+            </div>
+
+            <p class="answer hidden text-slate-400 grid-cols-2 gap-2">
+                {% for value, label in form.car_type.field.choices %}
+                    <span>
+                        <input type="checkbox" name="{{ form.car_type.html_name }}" value="{{ value }}" id="car_type_{{ value }}"
+                            {% if value in form.car_type.value %}checked{% endif %}>
+                        <label for="car_type_{{ value }}">{{ label }}</label>
+                    </span>
+                {% endfor %}
+            </p>
+
+        </div>
+        <!--    -->
+        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+            <div class="top-bar flex justify-between items-center cursor-pointer">
+                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                    SEATS
+                </h2>
+                <i class="arrow fa-solid fa-chevron-down text-brand"></i>
+            </div>
+
+            <p class="answer hidden text-slate-400 grid-cols-2 gap-2">
+                {% for value, label in form.seats.field.choices %}
+                    <span>
+                        <input type="checkbox" name="{{ form.seats.html_name }}" value="{{ value }}" id="seats_{{ value }}"
+                            {% if value in form.seats.value %}checked{% endif %}>
+                        <label for="seats_{{ value }}">{{ label }}</label>
+                    </span>
+                {% endfor %}
+            </p>
+
+        </div>
+
+        <!--    -->
+        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+            <div class="top-bar flex justify-between items-center cursor-pointer">
+                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                    MAKE & MODEL
+                </h2>
+                <i class="arrow fa-solid fa-chevron-down text-brand"></i>
+            </div>
+
+            <p class="answer hidden text-slate-400 gap-2">
+                {% for value, label in form.make_and_model.field.choices %}
+                    <span>
+                        <input type="checkbox" name="{{ form.make_and_model.html_name }}" value="{{ value }}" id="make_and_model_{{ value }}"
+                        {% if value in form.make_and_model.value %}checked{% endif %}>
+                        <label for="make_and_model_{{ value }}">{{ label }}</label>
+                    </span>
+                {% endfor %}
+            </p>
+
+        </div>
+
+        <button name="filter" class="btn-primary self-end mt-4">Apply</button>
+    </div> <!-- FAQ container  -->
+<!-- </div> FAQs Section -->
+
+<script>
+    const faqs = document.getElementsByClassName("question");
+    
+    for (let i = 0; i < faqs.length; i++) { 
+        const question = faqs[i];
+    
+        let arrow = question.querySelector('.arrow')
+        let topBar = question.querySelector('.top-bar')
+        let p = question.querySelector('p')
+    
+        function toggle(event) {
+            if (p.style.display == "grid") {  
+                p.style.display = "none";
+                arrow.style.transform = "rotate(0deg)";
+                topBar.style.padding = "0";
+            } 
+            else { 
+                p.style.display = "grid";
+                arrow.style.transform = "rotate(-180deg)";
+                topBar.style.padding = "0 0 1rem 0";
+    
+            }
+        }
+        
+        // btn.addEventListener('click', toggle);
+        topBar.addEventListener('click', toggle);
+    }
+    
+</script>

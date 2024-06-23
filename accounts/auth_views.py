@@ -58,7 +58,7 @@ def login_page(request):
                 return render(request, "accounts/check_your_email.html", {'email': user.email})
 
             login(request, user)
-            return redirect("/classes/")
+            return redirect("/")
 
         else:
             messages.error(request, f'The email or password is incorrect')

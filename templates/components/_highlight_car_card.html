@@ -1,0 +1,32 @@
+{% load custom_filters %}
+
+<div class="relative flex flex-col p-4 rounded-xl bg-white outline outline-1 outline-brand-light">
+    <div 
+    class="absolute right-4 top-0 -translate-y-[50%] rounded-md px-3 py-2 shadow-md border-brand-light bg-brand text-white text-xs
+    ">Highlight</div>
+
+    <div class="h-32 max-h-32">
+        <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
+    </div>
+    <div class="flex justify-between pt-2">
+        <h2 class="font-medium">{{car.name}}</h2>
+        <span class="font-medium">
+            ${{car.price}}
+            <span class="text-sm text-slate-500">/hour</span>
+        </span>
+    </div>
+    <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
+        {{car.address}} 
+    </p>
+    {% if car.distance %}
+    <span class="font-medium pt-2">
+        <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|simplify_distance_unit }}
+    </span>
+    {% endif %}
+
+    <div class="flex-1 flex items-end">
+        {% csrf_token %}
+        <input type="hidden" name="car_id" value="{{ car.id }}">
+        <button name="booking" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Book Now</button>
+    </div>
+</div>

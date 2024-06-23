@@ -1,10 +1,11 @@
+{% extends "_base.html" %}
+
 {% load compress %}
 {% load static %}
+{% load custom_filters %}
 
+{% block head %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
@@ -14,11 +15,6 @@
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
     {% endcompress %}
 
-    <!-- Font Awesome -->
-    <link href="{% static 'fontawsome/css/fontawesome.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawsome/css/brands.css' %}" rel="stylesheet">
-    <link href="{% static 'fontawsome/css/solid.css' %}" rel="stylesheet">
-
     <!-- Include Leaflet CSS and JavaScript -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
@@ -26,112 +22,128 @@
     <!-- Include Leaflet Routing Machine CSS and JavaScript -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script> 
-    
-    {% block head %}{% endblock head %}
-</head>
 
-<body class="font-poppins">
-    <div class="max-w-[1400px] m-auto">
-        <div class="m-auto px-8 flex flex-col items-center">
-            <div class="mt-8 py-4 border rounded-xl shadow-lg px-8">
+{% endblock head %}
 
-                <form method="post" class="flex items-center">
+
+{% block main %}
+    <form method="post" class="flex m-auto">
+        <div class="min-w-[250px] px-8 py-8 max-h-[100vh] overflow-auto">
+            <h2 class="text-lg">Filter by:</h2>
+            {% include "components/_filter.html" %}
+        </div>
+
+        <div class="w-full max-w-[1400px] m-auto max-h-[100vh] overflow-auto bg-slate-50 min-h-[100vh]">
+            <div class="mt-8 px-8 py-4 rounded-xl w-full">
+                <div method="post" id="search-form" class="flex h-full items-stretch">
                     {% csrf_token %}
-                    <div class="pr-8">
-                        <span class="text-sm font-medium">PICK-UP DATE & TIME</span>
-                        <div class="flex">
-                            <input type="date" class="block font-light">
-                            <input type="time" class="block font-light">
-                        </div>
+                    <div class="pr-2 flex-1">
+                        <span class="text-xs">PICK-UP DATE</span>
+                        {% include "components/_datepicker.html" with name="pick_up_date" value=pick_up_date %}
+                    </div>
+                    <div class="px-2 flex-1">
+                        <span class="text-xs">PICK-UP TIME</span>
+                        {% include "components/_timepicker.html" with name="pick_up_time" value=pick_up_time %}
+                    </div> 
+
+                    <div class="px-2 flex-1">
+                        <span class="text-xs">DROP-OFF DATE</span>
+                        {% include "components/_datepicker.html" with name="drop_off_date" value=drop_off_date %}
+                    </div>
+                    <div class="px-2 flex-1">
+                        <span class="text-xs">DROP-OFF TIME</span>
+                        {% include "components/_timepicker.html" with name="drop_off_time" value=drop_off_time %}
                     </div>
 
-                    <div class="border-l px-8">
-                        <span class="text-sm font-medium">DROP-OFF DATE & TIME</span>
+                    <div class="px-2 flex-1">
+                        <span class="text-xs">LOCATION</span>
                         <div class="flex">
-                            <input type="date" class="block font-light">
-                            <input type="time" class="block font-light">
+                            <input type="text" name="lat" id="lat_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent" value="{{lng}}">
+                            <input type="text" name="lng" id="lng_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent" value="{{lat}}">
+                            <button id="toggleButton" type="button"
+                            class="flex justify-between items-center text-start bg-gray-50 border border-gray-300 outline outline-1 outline-transparent text-gray-900 text-sm rounded-lg focus:outline-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onclick="openMap()">
+                                <span>Select</span> <i class="fa-solid fa-chevron-down"></i>
+                            </button>
                         </div>
-                    </div>
+                    </div> 
 
-                    <div class="border-l px-8 h-full">
-                        <span class="text-sm font-medium">LOCATION</span>
-                        <div class="flex">
-                            <input type="text" name="lat" id="lat_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent">
-                            <input type="text" name="lng" id="lng_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent">
-                            <button type="button" class="btn-primary !py-2">Select</button>
-                        </div>
+                    <div class="flex items-center pl-2">
+                        <button name="search" class="w-10 flex justify-center items-center aspect-square rounded-full bg-blue-500 hover:bg-blue-700">
+                            <i class="fa-solid fa-magnifying-glass text-sm text-white"></i>
+                        </button>
                     </div>
-
-                    <button class="w-12 flex justify-center items-center aspect-square rounded-full bg-blue-500 hover:bg-blue-700">
-                        <i class="fa-solid fa-magnifying-glass text-lg text-white"></i>
-                    </button>
-                </form>
+                </div>
 
                 <!-- Map preview -->
-                <div class="map-container w-full rounded-xl overflow-hidden my-4 border border-slate-500">
+                <div id="map-container" class="hidden map-container w-full rounded-xl overflow-hidden my-4 border border-slate-500">
                     <!-- Map container -->
-                    <div id="map" style="height: 400px;"></div>
+                    <div id="map" style="height: 300px;"></div>
                 </div>
-            </div>
 
-        </div>
+            </div> <!-- Search Section -->
+            
+            
+            <div class="px-8 py-4">
+                <h2 class="text-2xl pb-8"> <b class="font-semibold">Available</b> Cars</h2>
+                <div class="grid grid-cols-3 gap-4">
+                {% if recommended_cars %}
+                {% for car in recommended_cars %}
+                    {% include "components/_highlight_car_card.html" with car=car %}
+                {% endfor %}
 
-        <div class="px-16 py-8 flex flex-wrap gap-4">
-            {% for car in car_list %}
-            <div class="flex flex-col border w-[400px] p-4 rounded-xl">
-                <div class="h-40 max-h-40">
-                    <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
-                </div>
-                <div class="flex justify-between pt-2">
-                    <h2 class="font-medium">{{car.name}}</h2>
-                    <span class="font-medium">
-                        ${{car.price}}
-                        <span class="text-sm text-slate-500">/hour</span>
-                    </span>
-                </div>
-                <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
-                    {{car.address}} 
-                </p>
-                {% if car.distance %}
-                <span class="font-medium pt-2">
-                    <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|floatformat:2 }}
-                    <!-- <span class="text-sm text-slate-500">(12 min)</span> -->
-                </span>
                 {% endif %}
+                {% for car in car_list %}
+                    {% include "components/_car_card.html" with car=car %}
+                {% endfor %}
 
-                <div class="flex-1 flex items-end">
-                    <button class="flex-1 btn-primary mt-4">Book Now</button>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
 
+        </div> <!-- Main -->
+
+
+    </form>
+    
+    <script>
+        toggleButton = document.getElementById("toggleButton");
+        const mapContainer = document.getElementById('map-container');
+        {% comment %} document.addEventListener('click', function(event) {
+            if (!mapContainer.contains(event.target) && event.target !== toggleButton) {
+                mapContainer.style.display = 'none';
+            }
+        }); {% endcomment %}
+        {% comment %} function openMap() { {% endcomment %}
+
+        toggleButton.addEventListener('click', function(event) {
+                if (mapContainer.style.display == 'block') {
+                    mapContainer.style.display = 'none'
+                } else {
+                    mapContainer.style.display = 'block'
+                    map.invalidateSize();
+                }
+        });
+
+    </script>
 
     <script>
         const lat_input = document.getElementById("lat_input");
         const lng_input = document.getElementById("lng_input");
-        {% comment %} const destination_cord_field = document.getElementById("id_destination_cord"); {% endcomment %}
-
         let origin_cord = [4.2105,101.9758]
-        // let destination_cord = [-34.66,-58.43]
+
+        if (lat_input.value) {
+            origin_cord = [lng_input.value, lat_input.value]
+
+        } else {
+            let origin_cord = [4.2105,101.9758]
+            lat_input.value = origin_cord[0]
+            lng_input.value = origin_cord[1]
+        }
 
         var map = L.map('map').setView([-34.66,-58.43], 4);
 
-        {% comment %} if (lat_input.value){
-            origin_cord = [lat_input, lng_input]
-        }
-        if (destination_cord_field.value){
-            destination_cord = destination_cord_field.value.split(',');
-        }  {% endcomment %}
         // Create markers
         var marker_origin = L.marker(origin_cord, { draggable: true }).addTo(map);
-        // var marker_destination = L.marker(destination_cord, { draggable: true }).addTo(map);
         marker_origin.bindPopup("Origin").openPopup();
-        // marker_destination.bindPopup("Destination").openPopup();
-
-        origin_cord.value = marker_origin.getLatLng();
-        // destination_cord.value = marker_destination.getLatLng();
 
         map.fitBounds([marker_origin.getLatLng()])
         map.setView(map.getCenter(), 4);  // Change zoom of the map
@@ -145,7 +157,7 @@
             lat_input.value = marker_origin.getLatLng()['lat']
             lng_input.value = marker_origin.getLatLng()['lng'];
 
-            console.log("origin_cord" + "," + lat_input.value + lat_input.value);
+            // console.log("origin_cord" + "," + lat_input.value + ", " + lng_input.value);
         }
         
         // Add event listeners for marker drag
@@ -155,4 +167,4 @@
         updateRoute();
     </script>
 
-</body>
+{% endblock main %}

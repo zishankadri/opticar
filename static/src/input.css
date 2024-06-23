@@ -16,6 +16,24 @@
 }
 
 
+nav {
+    @apply flex-col justify-start gap-0;
+    @apply sm:flex-row sm:justify-between sm:gap-4;
+  }
+
+
+.nav-links {
+    @apply hidden w-full text-center flex-col justify-between gap-2 z-10 ;
+    @apply sm:flex sm:flex-col;
+    /* @apply px-5 py-2.5 rounded-md hover:bg-yellow-500/40 transition-all duration-200 ease-in-out; */
+}
+
+.nav-links a {
+    @apply py-2 px-4 block w-full bg-gray-700 sm:bg-transparent rounded-md;
+    @apply sm:bg-transparent hover:bg-slate-400/20 text-slate-400 text-sm
+}
+
+
 .regular-input {
     @apply rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6;
 }
@@ -35,10 +53,6 @@
 
 .mycontainer {
     @apply px-8 lg:px-16 py-4 lg:py-8;
-}
-
-.nav-link {
-    @apply px-5 py-2.5 rounded-md hover:bg-blue-100 text-slate-500 transition-all duration-200 ease-in-out;
 }
 
 .fancy-headline {
