@@ -28,7 +28,7 @@
 
 {% block main %}
     <form method="post" class="flex m-auto">
-        <div class="min-w-[250px] px-8 py-8 max-h-[100vh] overflow-auto">
+        <div class="min-w-[200px] px-4 py-4 max-h-[100vh] overflow-auto">
             <h2 class="text-lg">Filter by:</h2>
             {% include "components/_filter.html" %}
         </div>
@@ -86,15 +86,15 @@
             <div class="px-8 py-4">
                 <h2 class="text-2xl pb-8"> <b class="font-semibold">Available</b> Cars</h2>
                 <div class="grid grid-cols-3 gap-4">
-                {% if recommended_cars %}
-                {% for car in recommended_cars %}
-                    {% include "components/_highlight_car_card.html" with car=car %}
-                {% endfor %}
+                    {% if recommended_cars %}
+                    {% for car in recommended_cars %}
+                        {% include "components/_highlight_car_card.html" with car=car %}
+                    {% endfor %}
 
-                {% endif %}
-                {% for car in car_list %}
-                    {% include "components/_car_card.html" with car=car %}
-                {% endfor %}
+                    {% endif %}
+                    {% for car in car_list %}
+                        {% include "components/_car_card.html" with car=car %}
+                    {% endfor %}
 
                 </div>
             </div>
@@ -104,6 +104,38 @@
 
     </form>
     
+
+    <script>
+        pick_up_date = document.querySelector('input[name="pick_up_date"]').value
+        pick_up_time = document.querySelector('input[name="pick_up_time"]').value
+        drop_off_date = document.querySelector('input[name="drop_off_date"]').value
+        drop_off_time = document.querySelector('input[name="drop_off_time"]').value
+        console.log(pick_up_date)
+        function bookCar(carId) {
+    
+            fetch('http://127.0.0.1:8000/book_car/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    car_id: carId,
+                    pick_up_date: pick_up_date,
+                    pick_up_time: pick_up_time,
+                    drop_off_date: drop_off_date,
+                    drop_off_time: drop_off_time,
+                })
+            })
+            .then(response => response.json())
+            .then(data => 
+                window.location.href = `/bookings/`
+                {% comment %} window.location.href = `/bookings/${data.booking_id}/` {% endcomment %}
+            )
+            .catch(error => console.error('Error:', error));
+        }
+    
+    </script>
+
     <script>
         toggleButton = document.getElementById("toggleButton");
         const mapContainer = document.getElementById('map-container');

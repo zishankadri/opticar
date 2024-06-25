@@ -14,14 +14,10 @@
     <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
         {{car.address}} 
     </p>
-    {% if car.distance %}
-    <span class="font-medium pt-2">
-        <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|simplify_distance_unit }}
-        <!-- <span class="text-sm text-slate-500">(12 min)</span> -->
-    </span>
-    {% endif %}
+    status: {{booking.status}}
+
 
     <div method="post" class="flex-1 flex items-end">
-        <button type="button" onclick="bookCar({{ car.id }})" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Book Now</button>
+        <button type="button" onclick="bookCar({{ car.id }})" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Payment <i class="fa-solid fa-arrow-right pl-2"></i></button>
     </div>
 </div>

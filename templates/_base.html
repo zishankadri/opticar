@@ -27,25 +27,29 @@
     {% block head %}{% endblock head %}
 </head>
 {% comment %} <body class="font-poppins bg-[#141020] text-white"> {% endcomment %}
-    <body class="font-poppins">
+    <body class="font-poppins min-h-100vh h-full">
 
         <div class="w-full max-h-[100vh] overflow-auto flex">
-                <nav class="min-h-100vh border-r border-slate-200 p-2">
+
+            <nav class="min-h-[100vh] border-r border-slate-200 p-2 py-4 flex flex-col justify-between">
                 <ul id="nav-links" class="nav-links">
-                    <li><a href="/"><i class="fa-solid fa-house"></i></a></li>
-                    <li><a href="/booking/"><i class="fa-solid fa-calendar"></i></a></li>
+                    <li><a href="/" class="nav-link"><i class="fa-solid fa-house"></i></a></li>
+                    <li><a href="/bookings/" class="nav-link"><i class="fa-solid fa-calendar"></i></a></li>
 
                     {% if request.user.is_superuser %}
-                    <li class="mt-12"> <a href="/admin_support/"> <i class="fa-solid fa-envelope"></i> </a> </li>
-                    <li> <a href="/admin/table/Chapter/"> <i class="fa-solid fa-user-tie"></i> </a> </li>
+                    <!-- <li class="mt-12"> <a href="/admin_support/"> <i class="fa-solid fa-envelope"></i> </a> </li> -->
+                    <li class="mt-12"> <a href="/admin/" class="nav-link"> <i class="fa-solid fa-user-tie"></i> </a> </li>
 
                     {% else %}
-                    <li> <a href="/support/"> <i class="fa-solid fa-envelope"></i> </a> </li>
+                    <!-- <li> <a href="/support/"> <i class="fa-solid fa-envelope"></i> </a> </li> -->
                     
                     {% endif %}
                 </ul>
+                <div>
+                    <a href="/accounts/logout/" class="nav-link hover:text-red-700"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+                </div>
             </nav>
-            <div>
+            <div class="flex-1">
                 {% block main %} {% endblock main %}
             </div>
         </div>

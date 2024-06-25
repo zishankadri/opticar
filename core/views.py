@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from datetime import datetime
+from django.utils import timezone
+import json
 
 from .models import Car, Booking
 from .forms import CarFilterForm
-
-from django.utils.dateparse import parse_date, parse_time
-from datetime import datetime
-from django.utils import timezone
-
 from .search import smart_search
+from datetime import timedelta
 
 @login_required
 def home(request):
@@ -49,7 +49,7 @@ def home(request):
                 pick_up_datetime = pick_up_datetime,
                 drop_off_datetime = drop_off_datetime
             )
-            booking.save()
+            # booking.save()
 
         if "filter" in request.POST or "search" in request.POST:
             pick_up_date = request.POST.get('pick_up_date')
@@ -103,10 +103,12 @@ def home(request):
 
     car_list = Car.get_nearby_locations(4.2105, 101.9758)
     recommended_cars = smart_search(request.user, 4.2105, 101.9758)
-
+    today = timezone.now().date()
+    pick_up_date = today.strftime('%m/%d/%Y')
+    drop_off_date = (today + timedelta(days=1)).strftime('%m/%d/%Y')
     context = {
-        'pick_up_date': timezone.now().day,
-        'drop_off_date': timezone.now().day+1,
+        'pick_up_date': pick_up_date,
+        'drop_off_date': drop_off_date,
         'car_list': car_list,
         'recommended_cars': recommended_cars,
         'form': form,
@@ -114,12 +116,50 @@ def home(request):
     return render(request, "home.html", context)
 
 
+@login_required
 @csrf_exempt
-def booking(request):
-    print("hello")
-    print("hello")
+def book_car(request):
+    if request.method == 'POST':
+        if not request.user.verified_details:
+            return
+        
+        data = json.loads(request.body)
+        car_id = data.get('car_id')
+        pick_up_date = data.get('pick_up_date')
+        pick_up_time = data.get('pick_up_time')
+        drop_off_date = data.get('drop_off_date')
+        drop_off_time = data.get('drop_off_time')
+
+        # Combine date and time into a single datetime object
+        pick_up_datetime_str = f"{pick_up_date} {pick_up_time}"
+        pick_up_datetime = datetime.strptime(pick_up_datetime_str, '%m/%d/%Y %H:%M')
+        pick_up_datetime = timezone.make_aware(pick_up_datetime, timezone.get_current_timezone())
+
+        drop_off_datetime_str = f"{drop_off_date} {drop_off_time}"
+        drop_off_datetime = datetime.strptime(drop_off_datetime_str, '%m/%d/%Y %H:%M')
+        drop_off_datetime = timezone.make_aware(drop_off_datetime, timezone.get_current_timezone())
+
+        car = Car(id=car_id)
+
+        booking = Booking(
+            user = request.user,
+            car = car,
+            pick_up_datetime = pick_up_datetime,
+            drop_off_datetime = drop_off_datetime
+        )
+        booking.save()
+
+        return JsonResponse({'booking_id': booking.id})
     
-    print(request.POST)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
-    return redirect('/')
 
+@login_required
+def bookings(request, car_id=None):
+    booking_list = Booking.objects.filter(user=request.user)
+    print(booking_list)
+    context = {
+        'booking_list': booking_list,
+    }
+
+    return render(request, "bookings.html", context)

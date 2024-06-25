@@ -71,11 +71,24 @@ class Car(models.Model):
     
 
 class Booking(models.Model):
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETE = "COMPLETE"
+    CANCELLED = "CANCELLED"
+    
+    STATUC_CHOICES = [
+        ("IN_PROGRESS", "In progress"),
+        ("COMPLETE", "Complete"),
+        ("CANCELLED", "Cancelled"),
+    ]
+
     user = models.ForeignKey("accounts.UserAccount", on_delete=models.CASCADE)
     car = models.ForeignKey("core.Car", on_delete=models.CASCADE)
-    
+    status = models.CharField(choices=STATUC_CHOICES, default=IN_PROGRESS, max_length=15)
+
     pick_up_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
     drop_off_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
+
+
 
 # For PostegresSQL
 

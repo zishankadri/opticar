@@ -34,20 +34,17 @@ class UserAccountManager(BaseUserManager):
         user.save(using = self._db)
         return user
     
+    
 class UserAccount(AbstractBaseUser):
-    CUSTOMER = 'CUSTOMER'
-    CARRIER = 'CARRIER'
-
-    USER_TYPE_CHOICES = (
-        (CUSTOMER, "Customer"),
-        (CARRIER, "Carrier"),
-    )
-
     # Auth
     email = models.EmailField(max_length=254, unique=True)
+    ic = models.FileField(upload_to='ic/')
+    licence = models.FileField(upload_to='licence/')
 
+    verified_details = models.BooleanField(default=False)
+    
     # Verification OTP
-    verified_email = models.BooleanField(default=False)
+    verified_email = models.BooleanField(default=True)
     email_auth_token = models.CharField(max_length=12, blank=True)
 
     # DEFAULTS

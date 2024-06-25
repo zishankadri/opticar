@@ -1,0 +1,31 @@
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+{% load custom_filters %}
+
+{% block head %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings</title>
+    
+    <!-- Tailwind CSS -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+
+{% endblock head %}
+
+
+{% block main %}
+{% comment %} <div class="px-8 py-4"> {% endcomment %}
+
+    <div class="flex flex-wrap items-start gap-4 p-8 bg-slate-50 min-h-[100vh] max-h-[100vh] overflow-auto">
+        {% for booking in booking_list %}
+            {% include "components/_booking_car.html" with booking=booking car=booking.car %}
+        {% endfor %}
+    </div>
+{% comment %} </div> {% endcomment %}
+
+{% endblock main %}

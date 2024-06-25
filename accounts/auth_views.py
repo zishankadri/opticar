@@ -16,19 +16,19 @@ def register_page(request):
     domain_name = request.build_absolute_uri('/')[:-1]
 
     if request.method == "POST":
-        form = UserAccountForm(request.POST)
+        form = UserAccountForm(request.POST, request.FILES)
 
         if form.is_valid():
             user = form.save()
-            send_verification_email(email=user.email, auth_token=user.email_auth_token, domain_name=domain_name)
+            # send_verification_email(email=user.email, auth_token=user.email_auth_token, domain_name=domain_name)
             messages.success(request, "Registration successful!")
-            
-            return render(request, "accounts/check_your_email.html", {'email': user.email})
+            return redirect('/accounts/login/')
+            # return render(request, "accounts/check_your_email.html", {'email': user.email})
         
         else:
             for field, errors in form.errors.items():
                 for error in errors:
-                    messages.error(request, f"{error}")
+                    messages.error(request, f"{field}: {error}")
                     
             return render(request, "accounts/register.html", { 'form': form })
                 
@@ -53,7 +53,7 @@ def login_page(request):
         if user is not None:
             if not user.verified_email:
                 # Send verification codes again
-                send_verification_email(email=user.email, auth_token=user.email_auth_token, domain_name=domain_name)
+                # send_verification_email(email=user.email, auth_token=user.email_auth_token, domain_name=domain_name)
                 messages.info(request, f'This Accounts email is not verified')
                 return render(request, "accounts/check_your_email.html", {'email': user.email})
 
