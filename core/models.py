@@ -89,7 +89,15 @@ class Booking(models.Model):
     drop_off_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
 
 
-
+    def get_duration_in_hours(self):
+        # Calculate the difference between drop_off and pick_up
+        duration = self.drop_off_datetime - self.pick_up_datetime
+        # Convert duration to hours
+        duration_in_hours = duration.total_seconds() / 3600
+        return duration_in_hours
+    
+    def total_price(self):
+        return self.get_duration_in_hours() * self.car.price
 # For PostegresSQL
 
     # def get_locations_nearby_coords(latitude, longitude, max_distance=None):

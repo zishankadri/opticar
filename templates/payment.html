@@ -1,0 +1,48 @@
+{% extends "_base.html" %}
+
+{% load compress %}
+{% load static %}
+{% load custom_filters %}
+
+{% block head %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookings</title>
+    
+    <!-- Tailwind CSS -->
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+
+{% endblock head %}
+
+
+{% block main %}
+{% comment %} <div class="px-8 py-4"> {% endcomment %}
+<div 
+class="flex flex-wrap items-center justify-center p-8 bg-slate-50 min-h-[100vh] max-h-[100vh] overflow-auto">
+    <div class="bg-white p-4 py-12 rounded-lg flex gap-8 ">
+        <div class="h-32 max-h-32">
+            <img src="{{booking.car.image.url}}" alt="" class="h-full w-full object-contain">
+        </div>
+        <div class="flex flex-col justify-between text-gray-700">
+            <div class="flex gap-8">
+                Rental duration: 
+                <span>{{ total_hours }}</span>
+            </div>
+            <div class="flex gap-8">
+                Total Rental Fee
+                <span>MYR {{ booking.car.price }} X {{ total_hours }} hours</span>
+                <span class="text-black">MYR {{ booking.total_price }}</span>
+            </div>
+            <div class="self-end">
+                {{ form.render }}
+            </div>
+            <!-- <button class="btn-primary w-full ">{{form}} Continue With Pay Pal</button> -->
+        </div>
+    </div>
+</div>
+{% comment %} </div> {% endcomment %}
+
+{% endblock main %}

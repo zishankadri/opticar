@@ -4,12 +4,17 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from datetime import datetime
 from django.utils import timezone
+from django.conf import settings
+from django.urls import reverse
+
 import json
 
 from .models import Car, Booking
 from .forms import CarFilterForm
 from .search import smart_search
 from datetime import timedelta
+from .forms import CustomPayPalPaymentsForm
+
 
 @login_required
 def home(request):
@@ -154,12 +159,58 @@ def book_car(request):
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
+
 @login_required
-def bookings(request, car_id=None):
+def bookings(request):
     booking_list = Booking.objects.filter(user=request.user)
-    print(booking_list)
+    
     context = {
         'booking_list': booking_list,
     }
 
     return render(request, "bookings.html", context)
+
+
+from paypal.standard.forms import PayPalPaymentsForm
+
+@login_required
+def payment(request, booking_id):
+    booking = Booking.objects.get(id=booking_id)
+    total_hours = booking.get_duration_in_hours()
+    total_price = total_hours * booking.car.price
+
+    import uuid
+    uid = str(uuid.uuid4()).replace("-", "")[:12]
+    domain_name = request.build_absolute_uri('/')[:-1]
+
+    form = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": "100",
+        "item_name": "monthly",
+        "invoice": uid,
+
+        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
+        "return": request.build_absolute_uri(reverse('payment_successful')),
+        "cancel_return": request.build_absolute_uri(reverse('payment_failed')),
+        "custom": request.user.id,
+    }
+    form = CustomPayPalPaymentsForm(initial=form)
+
+    context = {
+        "form": form,
+        "booking" : booking,
+        "total_hours": total_hours,
+    }
+
+    return render(request, "payment.html", context)
+
+    
+def payment_successful_view(request):
+    print("hello")
+    return render(request, "payment.html")
+
+
+def payment_failed_view(request):
+    print("hello")
+
+    return render(request, "payment.html")

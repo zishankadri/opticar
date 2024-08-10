@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+
+    'paypal.standard.ipn',
     'compressor',
+
     'accounts',
+    'core',
 ]
 
 MIDDLEWARE = [
@@ -162,3 +165,9 @@ STORAGES = {
         },
     },
 }
+
+
+# PayPal Integration
+
+PAYPAL_RECEIVER_EMAIL = os.getenv('PAYPAL_RECEIVER_EMAIL')
+PAYPAL_TEST = True
