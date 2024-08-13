@@ -81,3 +81,13 @@ def valid_creation(ipn_obj, user):
     
 valid_ipn_received.connect(show_me_the_money)
 
+
+# def valid_transaction(ipn_obj, user):
+#     user = UserAccount.objects.get(subscriber_id=ipn_obj.subscr_id)
+    
+#     if not ipn_obj.payment_status == ST_PP_COMPLETED:
+#         return False
+#     if user.subscription_status == "INVALID":
+#         return False
+        
+#     return True
