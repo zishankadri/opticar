@@ -183,18 +183,35 @@ def payment(request, booking_id):
     uid = str(uuid.uuid4()).replace("-", "")[:12]
     domain_name = request.build_absolute_uri('/')[:-1]
 
+
     form = {
         'business': settings.PAYPAL_RECEIVER_EMAIL,
-        "amount": "100",
-        "item_name": "monthly",
+        # "amount": "10.00",
+        "item_name": "Monthly",
         "invoice": uid,
+
+        # Subscription
+        #  - First month discount.
+        "a1": "233",
+        "p1": 1,
+        "t1": "M",
+
+        "cmd": "_xclick-subscriptions",
+        "a3": "233",      # monthly price
+        # duration of each unit (depends on unit)
+        "p3": 1,
+        "t3": "M",                         # duration unit ("M for Month")
+        "src": "1",                        # make payments recur
+        "sra": "1",                        # reattempt payment on payment error
+        "no_note": "1",                    # remove extra notes (optional)
 
         "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
         "return": request.build_absolute_uri(reverse('payment_successful')),
         "cancel_return": request.build_absolute_uri(reverse('payment_failed')),
+        # Custom command to correlate to some function later (optional)
         "custom": request.user.id,
     }
-    form = CustomPayPalPaymentsForm(initial=form)
+    form = CustomPayPalPaymentsForm(initial=form, button_type="subscribe")
 
     context = {
         "form": form,
