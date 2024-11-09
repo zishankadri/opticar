@@ -1,27 +1,38 @@
 {% load custom_filters %}
 
-<div class="flex flex-col p-4 rounded-xl bg-white">
-    <div class="h-32 max-h-32">
-        <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
-    </div>
-    <div class="flex justify-between pt-2">
-        <h2 class="font-medium">{{car.name}}</h2>
-        <span class="font-medium">
-            RM{{car.price}}
-            <span class="text-sm text-slate-500">/hour</span>
-        </span>
-    </div>
-    <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
-        {{car.address}} 
-    </p>
-    {% if car.distance %}
-    <span class="font-medium pt-2">
-        <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|simplify_distance_unit }}
-        <!-- <span class="text-sm text-slate-500">(12 min)</span> -->
-    </span>
-    {% endif %}
+<div class="relative flex flex-col p-[1px] rounded-3xl bg-[#15141A] max-w-[350px] overflow-hidden">
+    <div class="absolute w-[90%] h-[90%] rounded-full bg-white/50 blur-3xl top-[50%] translate-y-[-50%] left-[50%] translate-x-[-50%]"></div>
+    <div class="w-full rounded-3xl bg-[#15141A] hover:bg-[#191820] duration-300 z-10 p-6">
 
-    <div method="post" class="flex-1 flex items-end">
-        <button type="button" onclick="bookCar({{ car.id }})" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Book Now</button>
+        <div class="h-32 max-h-32">
+            <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
+        </div>
+        <div class="flex justify-between pt-2">
+            <h2 class="font-medium">{{car.name}}</h2>
+
+        </div>
+        <div class="flex pt-2 text-sm">
+            {% if car.distance %}
+            <span class="w-full text-slate-300">
+                <i class="fa-solid fa-person-walking text-slate-500"></i> {{ car.distance|simplify_distance_unit }}
+            </span>
+            {% endif %}
+            <span class="w-full text-slate-300">
+                <i class="fa-solid fa-car text-slate-500"></i> {{ car.car_type }}
+            </span>
+            <span class="min-w-8 text-slate-300">
+                <i class="fa-solid fa-chair text-slate-500"></i> {{ car.seats }}
+            </span>
+        </div>
+
+        <div class="block text-lg text-brand-light font-semibold italic pt-2">
+            RM {{car.price}}
+            <span class="text-sm text-slate-500">/hour</span>
+        </div>
+
+        <div method="post" class="flex-1 flex items-end">
+            <button type="button" onclick="bookCar({{ car.id }})" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Book Now</button>
+        </div>
     </div>
+
 </div>

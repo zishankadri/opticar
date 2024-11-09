@@ -11,9 +11,9 @@ module.exports = {
     extend: {
       colors: {
         'border-light': '#e6e6e680',
-        'brand': '#2563eb',
-        'brand-light': '#60a5fa',
-        'brand-hover': '#1d4ed8',
+        'brand': '#14b8a6',
+        'brand-light': '#2dd4bf',
+        'brand-hover': '#0d9488',
         // 'brand': '#9333ea',
         // 'brand-hover': '#7e22ce',
         // 'brand': colors.blue,

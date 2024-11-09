@@ -9,6 +9,14 @@ urlpatterns = [
     path('book_car/', views.book_car, name="book_car"),
     path('bookings/', views.bookings, name="bookings"),
     path('payment/<str:booking_id>/', views.payment, name="payment"),
+    path('booking_info/<str:booking_id>/', views.booking_info, name="payment"),
+
+    path('profile/', views.profile_page, name="profile"),
+    
+    path('support/', views.support, name="support"),
+    path('admin_support/', views.admin_support, name="admin_support"),
+    path('admin_support/<str:user_id>/', views.admin_support, name="admin_support"),
+
 
     path('paypal/', include("paypal.standard.ipn.urls")),
     path('payment_successful/', views.payment_successful_view, name="payment_successful"),

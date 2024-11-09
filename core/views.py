@@ -9,11 +9,13 @@ from django.urls import reverse
 
 import json
 
-from .models import Car, Booking
+from .models import Car, Booking, Support_message
 from .forms import CarFilterForm
 from .search import smart_search
 from datetime import timedelta
 from .forms import CustomPayPalPaymentsForm
+from accounts.models import UserAccount
+from paypal.standard.forms import PayPalPaymentsForm
 
 
 @login_required
@@ -126,7 +128,8 @@ def home(request):
 def book_car(request):
     if request.method == 'POST':
         if not request.user.verified_details:
-            return
+            print("410 bberrrrrrrrrr")
+            return JsonResponse({'is_verified_details': False}, status=410)
         
         data = json.loads(request.body)
         car_id = data.get('car_id')
@@ -154,7 +157,7 @@ def book_car(request):
         )
         booking.save()
 
-        return JsonResponse({'booking_id': booking.id})
+        return JsonResponse({'booking_id': booking.id, 'is_verified_details': True})
     
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
@@ -171,10 +174,19 @@ def bookings(request):
     return render(request, "bookings.html", context)
 
 
-from paypal.standard.forms import PayPalPaymentsForm
 
 @login_required
 def payment(request, booking_id):
+    if request.method == 'POST':
+        if "cash_payment" in request.POST:
+            booking = Booking.objects.get(id=booking_id)
+            booking.payment_method = Booking.CASH
+            booking.status = Booking.IN_PROGRESS
+
+            booking.save()
+
+            return redirect('/bookings/')
+
     booking = Booking.objects.get(id=booking_id)
     total_hours = booking.get_duration_in_hours()
     total_price = total_hours * booking.car.price
@@ -186,24 +198,9 @@ def payment(request, booking_id):
 
     form = {
         'business': settings.PAYPAL_RECEIVER_EMAIL,
-        # "amount": "10.00",
-        "item_name": "Monthly",
+        "amount": str(total_price),
+        "item_name": booking_id,
         "invoice": uid,
-
-        # Subscription
-        #  - First month discount.
-        "a1": "233",
-        "p1": 1,
-        "t1": "M",
-
-        "cmd": "_xclick-subscriptions",
-        "a3": "233",      # monthly price
-        # duration of each unit (depends on unit)
-        "p3": 1,
-        "t3": "M",                         # duration unit ("M for Month")
-        "src": "1",                        # make payments recur
-        "sra": "1",                        # reattempt payment on payment error
-        "no_note": "1",                    # remove extra notes (optional)
 
         "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
         "return": request.build_absolute_uri(reverse('payment_successful')),
@@ -231,3 +228,88 @@ def payment_failed_view(request):
     print("hello")
 
     return render(request, "payment.html")
+
+
+@login_required
+def bookings(request):
+    booking_list = Booking.objects.filter(user=request.user)
+    
+    context = {
+        'booking_list': booking_list,
+    }
+
+    return render(request, "bookings.html", context)
+
+
+@login_required
+def booking_info(request, booking_id):
+    booking = Booking.objects.get(id=booking_id)
+    total_hours = booking.get_duration_in_hours()
+
+    context = {
+        'booking' : booking,
+        'total_hours': total_hours,
+    }
+
+    return render(request, "booking_info.html", context)
+
+
+
+@login_required
+def support(request):
+    message_list = Support_message.objects.filter(user=request.user).order_by("date")
+    if request.method == "POST":
+        content = request.POST['content']
+        message = Support_message(
+            user=request.user,
+            sender=request.user,
+            content=content,
+        )
+        message.save()
+        
+    return render(request, "support.html", { 'message_list': message_list })
+
+
+
+@login_required
+def admin_support(request, user_id=None):
+    if user_id:
+        user = UserAccount.objects.get(id=user_id)
+        message_list = Support_message.objects.filter(user=user).order_by("date")
+        if request.method == "POST":
+            content = request.POST['content']
+            message = Support_message(
+                user=user,
+                sender=request.user,
+                content=content,
+            )
+            message.save()
+            
+        return render(request, "support.html", { 'message_list': message_list })
+    
+    user_list = UserAccount.objects.all()
+    context = {
+        'user_list': user_list,
+    }
+
+    return render(request, "admin_support.html", context)
+
+
+def profile_page(request):
+    if request.method == 'POST':
+        full_name = request.POST['full_name']
+        email = request.POST['email']
+
+        if request.FILES.get('ic'):
+            ic = request.FILES['ic']
+            request.user.ic = ic
+
+        if request.FILES.get('license'):
+            license = request.FILES['license']
+            request.user.license = license
+
+        request.user.full_name = full_name
+        request.user.email = email
+        request.user.save()
+
+    return render(request, "profile.html")

@@ -8,7 +8,7 @@ class UserAccountForm(UserCreationForm):
 
     class Meta:
         model = UserAccount
-        fields = ['email', 'password1', 'password2', 'ic', 'licence']
+        fields = ['full_name', 'email', 'password1', 'password2', 'ic', 'licence']
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)

@@ -1,6 +1,6 @@
 {% load custom_filters %}
 
-<div class="flex flex-col p-4 rounded-xl bg-white">
+<div class="flex flex-col p-4 rounded-xl bg-[#15141A] text-white">
     <div class="h-32 max-h-32">
         <img src="{{car.image.url}}" alt="" class="h-full w-full object-contain">
     </div>
@@ -11,13 +11,27 @@
             <span class="text-sm text-slate-500">/hour</span>
         </span>
     </div>
-    <p class="mt-2 border-t pt-2 text-gray-500 text-sm">
+    <p class="mt-2 border-t border-white/20 pt-2 text-gray-400 text-sm">
         {{car.address}} 
     </p>
-    status: {{booking.status}}
+    <div class="flex items-start pt-2 text-sm">
+        {% if booking.status == "PAYMENT_METHOD_REQUIRED" %}
+        <div class="p-2 rounded-md bg-yellow-500/40">Payment Method Required</div>
+        {% elif booking.status == "IN_PROGRESS" %}
+        <div class="p-2 rounded-md bg-green-500/40">In Progress</div>
+        {% elif booking.status == "COMPLETE" %}
+        <div class="p-2 rounded-md bg-green-500/40">Complete</div>
+        {% elif booking.status == "CANCELLED" %}
+        <div class="p-2 rounded-md bg-red-500/40">Cancelled</div>
+        {% endif %}
+    </div>
 
-
+    
     <div method="post" class="flex-1 flex items-end">
+        {% if booking.status == "PAYMENT_METHOD_REQUIRED" %}
         <a href="/payment/{{ booking.id }}/" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Payment <i class="fa-solid fa-arrow-right pl-2"></i></a>
+        {% elif booking.status == "IN_PROGRESS" %}
+        <a href="/booking_info/{{ booking.id }}/" class="cursor-pointer text-center flex-1 btn-secondary mt-4">Details <i class="fa-solid fa-arrow-right pl-2"></i></a>
+        {% endif %}
     </div>
 </div>

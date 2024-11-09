@@ -27,13 +27,21 @@
 
 
 {% block main %}
-    <form method="post" class="flex m-auto">
-        <div class="min-w-[200px] px-4 py-4 max-h-[100vh] overflow-auto">
-            <h2 class="text-lg">Filter by:</h2>
+    <style>
+        body {
+            background-color: black;
+        }
+
+    </style>
+    <form method="post" class="flex m-auto text-white">
+        <div class="min-w-[200px] px-4 py-4 bg-[#201F27] max-h-[100vh] overflow-auto">
+            <h2 class="text-lg mb-8 text-slate-400">Filter <i class="fa-solid fa-filter"></i></h2>
             {% include "components/_filter.html" %}
         </div>
 
-        <div class="w-full max-w-[1400px] m-auto max-h-[100vh] overflow-auto bg-slate-50 min-h-[100vh]">
+        <div class="w-full max-h-[100vh] overflow-auto">
+
+        <div class="flex flex-col items-center w-full max-w-[1400px] m-auto  bg-[#13121A] min-h-[100vh]">
             <div class="mt-8 px-8 py-4 rounded-xl w-full">
                 <div method="post" id="search-form" class="flex h-full items-stretch">
                     {% csrf_token %}
@@ -61,14 +69,14 @@
                             <input type="text" name="lat" id="lat_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent" value="{{lng}}">
                             <input type="text" name="lng" id="lng_input" class="hidden font-light max-w-[16ch] text-xs bg-transparent" value="{{lat}}">
                             <button id="toggleButton" type="button"
-                            class="flex justify-between items-center text-start bg-gray-50 border border-gray-300 outline outline-1 outline-transparent text-gray-900 text-sm rounded-lg focus:outline-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onclick="openMap()">
+                            class="flex justify-between items-center text-start bg-[#1A1921] border-none shadow-md outline outline-1 outline-transparent text-gray-200 text-sm rounded-lg focus:outline-blue-500 focus:border-blue-500 w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onclick="openMap()">
                                 <span>Select</span> <i class="fa-solid fa-chevron-down"></i>
                             </button>
                         </div>
                     </div> 
 
                     <div class="flex items-center pl-2">
-                        <button name="search" class="w-10 flex justify-center items-center aspect-square rounded-full bg-blue-500 hover:bg-blue-700">
+                        <button name="search" class="w-10 flex justify-center items-center aspect-square rounded-full bg-brand hover:bg-brand-hover">
                             <i class="fa-solid fa-magnifying-glass text-sm text-white"></i>
                         </button>
                     </div>
@@ -85,7 +93,7 @@
             
             <div class="px-8 py-4">
                 <h2 class="text-2xl pb-8"> <b class="font-semibold">Available</b> Cars</h2>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="inline-grid grid-cols-2 2xl:grid-cols-3 gap-12">
                     {% if recommended_cars %}
                     {% for car in recommended_cars %}
                         {% include "components/_highlight_car_card.html" with car=car %}
@@ -101,16 +109,17 @@
 
         </div> <!-- Main -->
 
+        </div>
+
 
     </form>
     
-
+    
     <script>
         pick_up_date = document.querySelector('input[name="pick_up_date"]').value
         pick_up_time = document.querySelector('input[name="pick_up_time"]').value
         drop_off_date = document.querySelector('input[name="drop_off_date"]').value
         drop_off_time = document.querySelector('input[name="drop_off_time"]').value
-        console.log(pick_up_date)
         function bookCar(carId) {
     
             fetch('http://127.0.0.1:8000/book_car/', {
@@ -127,10 +136,16 @@
                 })
             })
             .then(response => response.json())
-            .then(data => 
-                window.location.href = `/bookings/`
+            .then(data => {
+
+                if (!data.is_verified_details) {
+                    addMessage('Please wait for your IC and driving license to be verified before you can book a car.', 'error');
+                }
+                else {
+                    window.location.href = `/bookings/`
+                }
                 {% comment %} window.location.href = `/bookings/${data.booking_id}/` {% endcomment %}
-            )
+            })
             .catch(error => console.error('Error:', error));
         }
     

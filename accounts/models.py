@@ -37,6 +37,7 @@ class UserAccountManager(BaseUserManager):
     
 class UserAccount(AbstractBaseUser):
     # Auth
+    full_name = models.CharField(max_length=50)
     email = models.EmailField(max_length=254, unique=True)
     ic = models.FileField(upload_to='ic/')
     licence = models.FileField(upload_to='licence/')

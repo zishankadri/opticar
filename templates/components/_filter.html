@@ -1,15 +1,15 @@
 <!-- <div class="flex flex-col gap-16 items-center w-full "> -->
     <div method="post" id="filter-form" class="w-full flex flex-col justify-center lg:max-w-[50ch] border-t border-slate-200/10">
         {% csrf_token %}
-        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+        <div class="question group border-b border-slate-400/10 py-4 *:text-slate-400">
             <div class="top-bar flex justify-between items-center cursor-pointer">
-                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                <h2 class="text-xs font-semibold group-hover:text-brand">
                     CAR TYPE
                 </h2>
                 <i class="arrow fa-solid fa-chevron-down text-brand"></i>
             </div>
 
-            <p class="answer hidden text-slate-400 gap-2">
+            <p class="answer hidden text-slate-400 gap-2 text-sm">
                 {% for value, label in form.car_type.field.choices %}
                     <span>
                         <input type="checkbox" name="{{ form.car_type.html_name }}" value="{{ value }}" id="car_type_{{ value }}"
@@ -21,15 +21,15 @@
 
         </div>
         <!--    -->
-        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+        <div class="question group border-b border-slate-400/10 py-4 *:text-slate-400">
             <div class="top-bar flex justify-between items-center cursor-pointer">
-                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                <h2 class="text-xs font-semibold group-hover:text-brand">
                     SEATS
                 </h2>
                 <i class="arrow fa-solid fa-chevron-down text-brand"></i>
             </div>
 
-            <p class="answer hidden text-slate-400 gap-2">
+            <p class="answer hidden text-slate-400 gap-2 text-sm">
                 {% for value, label in form.seats.field.choices %}
                     <span>
                         <input type="checkbox" name="{{ form.seats.html_name }}" value="{{ value }}" id="seats_{{ value }}"
@@ -42,15 +42,15 @@
         </div>
 
         <!--    -->
-        <div class="question group border-b border-slate-700/10 py-4 *:text-slate-700">
+        <div class="question group border-b border-slate-400/10 py-4 *:text-slate-400">
             <div class="top-bar flex justify-between items-center cursor-pointer">
-                <h2 class="text-sm font-medium group-hover:text-blue-600">
+                <h2 class="text-xs font-semibold group-hover:text-brand">
                     MAKE & MODEL
                 </h2>
                 <i class="arrow fa-solid fa-chevron-down text-brand"></i>
             </div>
 
-            <p class="answer hidden text-slate-400 gap-2">
+            <p class="answer hidden gap-2 text-sm">
                 {% for value, label in form.make_and_model.field.choices %}
                     <span>
                         <input type="checkbox" name="{{ form.make_and_model.html_name }}" value="{{ value }}" id="make_and_model_{{ value }}"
@@ -62,7 +62,7 @@
 
         </div>
 
-        <button name="filter" class="btn-primary self-end mt-4">Apply</button>
+        <button name="filter" class="btn-secondary self-end mt-4">Search</button>
     </div> <!-- FAQ container  -->
 <!-- </div> FAQs Section -->
 

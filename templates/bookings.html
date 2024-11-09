@@ -21,7 +21,7 @@
 {% block main %}
 {% comment %} <div class="px-8 py-4"> {% endcomment %}
 
-    <div class="flex flex-wrap items-start gap-4 p-8 bg-slate-50 min-h-[100vh] max-h-[100vh] overflow-auto">
+    <div class="flex flex-wrap items-start gap-4 p-8 bg-[#13121A] min-h-[100vh] max-h-[100vh] overflow-auto">
         {% for booking in booking_list %}
             {% include "components/_booking_car.html" with booking=booking car=booking.car %}
         {% endfor %}

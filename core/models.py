@@ -71,19 +71,31 @@ class Car(models.Model):
     
 
 class Booking(models.Model):
+    PAYMENT_METHOD_REQUIRED = "PAYMENT_METHOD_REQUIRED"
     IN_PROGRESS = "IN_PROGRESS"
     COMPLETE = "COMPLETE"
     CANCELLED = "CANCELLED"
+
+    CASH = "CASH"
+    ONLINE = "ONLINE"
     
-    STATUC_CHOICES = [
-        ("IN_PROGRESS", "In progress"),
-        ("COMPLETE", "Complete"),
-        ("CANCELLED", "Cancelled"),
+    STATUS_CHOICES = [
+        (PAYMENT_METHOD_REQUIRED, "Payment method required"),
+        (IN_PROGRESS, "In progress"),
+        (COMPLETE, "Complete"),
+        (CANCELLED, "Cancelled"),
+    ]
+
+    PAYMENT_METHOD_CHOICES = [
+        (CASH, "Cash"),
+        (ONLINE, "Online"),
     ]
 
     user = models.ForeignKey("accounts.UserAccount", on_delete=models.CASCADE)
     car = models.ForeignKey("core.Car", on_delete=models.CASCADE)
-    status = models.CharField(choices=STATUC_CHOICES, default=IN_PROGRESS, max_length=15)
+    status = models.CharField(choices=STATUS_CHOICES, default=PAYMENT_METHOD_REQUIRED, max_length=25)
+    payment_method = models.CharField(default=None,choices=PAYMENT_METHOD_CHOICES, max_length=10, null=True, blank=True)
+    # payment_done = models.BooleanField()
 
     pick_up_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
     drop_off_datetime = models.DateTimeField(auto_now=False, auto_now_add=False)
@@ -98,26 +110,44 @@ class Booking(models.Model):
     
     def total_price(self):
         return self.get_duration_in_hours() * self.car.price
+    
+
+
+class Support_message(models.Model):
+    user = models.ForeignKey("accounts.UserAccount", on_delete=models.CASCADE, related_name="support_message_as_user")
+    sender = models.ForeignKey("accounts.UserAccount", on_delete=models.CASCADE, related_name="support_message_as_sender")
+    content = models.TextField()
+    date = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.sender}"
+    
+
+
+
+
+
 # For PostegresSQL
 
-    # def get_locations_nearby_coords(latitude, longitude, max_distance=None):
-    #     """
-    #     Return objects sorted by distance to specified coordinates
-    #     which distance is less than max_distance given in kilometers
-    #     """
-    #     # Great circle distance formula
-    #     gcd_formula = "6371 * acos(least(greatest(\
-    #     cos(radians(%s)) * cos(radians(latitude)) \
-    #     * cos(radians(longitude) - radians(%s)) + \
-    #     sin(radians(%s)) * sin(radians(latitude)) \
-    #     , -1), 1))"
-    #     distance_raw_sql = RawSQL(
-    #         gcd_formula,
-    #         (latitude, longitude, latitude)
-    #     )
-    #     qs = Car.objects.all() \
-    #     .annotate(distance=distance_raw_sql) \
-    #     .order_by('distance')
-    #     if max_distance is not None:
-    #         qs = qs.filter(distance__lt=max_distance)
-    #     return qs
+# def get_locations_nearby_coords(latitude, longitude, max_distance=None):
+#     """
+#     Return objects sorted by distance to specified coordinates
+#     which distance is less than max_distance given in kilometers
+#     """
+#     # Great circle distance formula
+#     gcd_formula = "6371 * acos(least(greatest(\
+#     cos(radians(%s)) * cos(radians(latitude)) \
+#     * cos(radians(longitude) - radians(%s)) + \
+#     sin(radians(%s)) * sin(radians(latitude)) \
+#     , -1), 1))"
+#     distance_raw_sql = RawSQL(
+#         gcd_formula,
+#         (latitude, longitude, latitude)
+#     )
+#     qs = Car.objects.all() \
+#     .annotate(distance=distance_raw_sql) \
+#     .order_by('distance')
+#     if max_distance is not None:
+#         qs = qs.filter(distance__lt=max_distance)
+#     return qs
+

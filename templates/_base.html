@@ -26,24 +26,32 @@
 
     {% block head %}{% endblock head %}
 </head>
+<style>
+    * {
+        cursor: url('{% static "images/cursor.svg" %}') 0 0, auto !important;
+    }
+    a {
+        cursor: url('{% static "images/cursor.svg" %}'), auto;
+    }
+</style>
 {% comment %} <body class="font-poppins bg-[#141020] text-white"> {% endcomment %}
-    <body class="font-poppins min-h-100vh h-full">
+    <body class="font-poppins min-h-100vh h-full bg-[#13121A] text-white">
 
         <div class="w-full max-h-[100vh] overflow-auto flex">
 
-            <nav class="min-h-[100vh] border-r border-slate-200 p-2 py-4 flex flex-col justify-between">
+            <nav class="min-h-[100vh] border-r bg-[#201F27] border-slate-400/10 p-2 py-4 flex flex-col justify-between">
                 <ul id="nav-links" class="nav-links">
                     <li><a href="/" class="nav-link"><i class="fa-solid fa-house"></i></a></li>
                     <li><a href="/bookings/" class="nav-link"><i class="fa-solid fa-calendar"></i></a></li>
+                    <li><a href="/profile/" class="nav-link"><i class="fa-solid fa-user"></i></a></li>
 
                     {% if request.user.is_superuser %}
-                    <!-- <li class="mt-12"> <a href="/admin_support/"> <i class="fa-solid fa-envelope"></i> </a> </li> -->
-                    <li class="mt-12"> <a href="/admin/" class="nav-link"> <i class="fa-solid fa-user-tie"></i> </a> </li>
-
+                    <li><a href="/admin_support/" class="nav-link"><i class="fa-solid fa-circle-info"></i></a></li>
+                    <li class="mt-12"> <a href="/admin/" class="nav-link"> <i class="fa-solid fa-table"></i> </a> </li>
                     {% else %}
-                    <!-- <li> <a href="/support/"> <i class="fa-solid fa-envelope"></i> </a> </li> -->
-                    
+                    <li><a href="/support/" class="nav-link"><i class="fa-solid fa-circle-info"></i></a></li>
                     {% endif %}
+                    
                 </ul>
                 <div>
                     <a href="/accounts/logout/" class="nav-link hover:text-red-700"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
@@ -54,8 +62,8 @@
             </div>
         </div>
 
-    {% if messages %}
     <ul class="messages absolute flex flex-col top-0 items-end w-full gap-1 p-2 z-20 overflow-hidden">
+    {% if messages %}
         {% for message in messages %}
         <li class="message flex rounded-md justify-between w-96 border border-l-2 text-slate-900 !bg-white z-20
             {% if message.tags == 'error' %} border-l-red-400 text-red-400 
@@ -69,8 +77,8 @@
             <button class="msg-destroy-btn !text-slate-500 p-4 hover:bg-slate-100"><i class="fa-solid fa-x"></i></button>
         </li>
         {% endfor %}
+        {% endif %}
     </ul>
-    {% endif %}
 
 
 </body>
@@ -90,6 +98,44 @@
         cutBtn.onclick = () => {
             message.style.display = "none";
         }
+    }
+
+
+    const messagesContainer = document.querySelector(".messages");
+    console.log("here goooo: " + messagesContainer);
+    function addMessage(text, type = 'info') {
+        // Create a new list item element for the message
+        const message = document.createElement('li');
+        message.classList.add('message', 'flex', 'rounded-md', 'justify-between', 'w-96', 'border', 'border-l-2', 'text-slate-900', '!bg-white', 'z-20');
+
+        // Add type-specific styles
+        if (type === 'error') {
+            message.classList.add('border-l-red-400', 'text-red-400');
+        } else if (type === 'success') {
+            message.classList.add('border-l-green-400');
+        } else if (type === 'info') {
+            message.classList.add('border-l-blue-400');
+        }
+
+        // Create the message text span
+        const messageText = document.createElement('span');
+        messageText.classList.add('message-text', 'p-4');
+        messageText.textContent = text;
+
+        // Create the close button
+        const cutBtn = document.createElement('button');
+        cutBtn.classList.add('msg-destroy-btn', '!text-slate-500', 'p-4', 'hover:bg-slate-100');
+        cutBtn.innerHTML = '<i class="fa-solid fa-x"></i>';
+        cutBtn.onclick = () => {
+            message.style.display = "none";
+        };
+
+        // Append text and button to the message
+        message.appendChild(messageText);
+        message.appendChild(cutBtn);
+
+        // Append the message to the messages container
+        messagesContainer.appendChild(message);
     }
 
 </script>

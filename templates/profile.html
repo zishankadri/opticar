@@ -1,0 +1,68 @@
+{% extends "_base.html" %}
+{% load humanize %}
+{% comment %} {% load custom_filters %} {% endcomment %}
+
+{% block head %}
+    {% load static %}
+    <title>Chord Wizard / Profile</title>
+
+{% endblock head %}
+
+
+{% block main %}
+
+<div class="flex flex-col relative full-height max-w-[800px] h-[100vh] max-h-[100vh] m-auto ">
+    <form method="post" enctype="multipart/form-data" class="flex-1 flex flex-col items-center gap-2 py-16 px-8">
+        {% csrf_token %}
+        <h1 class="text-2xl">{{request.user.full_name}}</h1>
+
+        <div class="flex flex-col gap-8 pt-8">
+            <div class="flex items-center text-lg">
+                <span class="w-[15ch] font-medium"> Full Name </span>
+                <input name="full_name" value="{{request.user.full_name}}" type="text" class="dark-input w-[22ch]">
+                <!-- <i class="fa-solid fa-pen"></i> -->
+            </div>
+            <div class="flex items-center text-lg">
+                <span class="min-w-[15ch] font-medium"> Email </span>
+                <input name="email" value="{{request.user.email}}" type="text" class="dark-input !bg-transparent !text-white/80 !ring-0 w-[22ch]">
+            </div>
+            <div class="flex items-center text-lg">
+                <span class="min-w-[15ch] font-medium"> IC </span>
+                <a href="{{request.user.ic.url}}" target="_blank" class="regular-input text-center px-3 !bg-white/10 !text-white !ring-0">View IC</a>
+                <label for="ic" class="p-1 px-4 flex items-center justify-center"><i class="fa-solid fa-pen"></i></label>
+                <input name="ic" id="ic" type="file" class="hidden regular-input !p-0 !bg-white/10 !text-white !ring-0 w-[22ch]">
+            </div>
+            <div class="flex items-center text-lg">
+                <span class="min-w-[15ch] font-medium"> Driving licence </span>
+                <a href="{{request.user.licence.url}}" target="_blank" class="regular-input text-center px-3 !bg-white/10 !text-white !ring-0">View licence</a>
+                <label for="licence" class="p-1 px-4 flex items-center justify-center"><i class="fa-solid fa-pen"></i></label>
+                <input name="licence" id="licence" type="file" class="hidden regular-input !p-0 !bg-white/10 !text-white !ring-0 w-[22ch]">
+            </div>
+            <!-- Verified Details -->
+            {% if request.user.verified_details %}
+            <div class="w-[37ch] text-lg flex gap-4 items-start border border-green-400 text-green-400 p-4 rounded-xl">
+                <span class="text-xs rounded-full p-1.5 border border-green-400 inline-flex items-center justify-center"> <i class="fa-solid fa-check"></i> </span>
+                <p class="text-sm">
+                    Admins have verified your IC and driving license, allowing you to book cars.
+                </p>
+            </div>
+            {% else %}
+            <div class="w-[37ch] text-lg flex gap-4 items-start border border-red-400 text-red-400 p-4 rounded-xl">
+                <span class="text-xs rounded-full p-1.5 border border-red-400 inline-flex items-center justify-center"> <i class="fa-solid fa-check"></i> </span>
+                <p class="text-sm">
+                    Admins have not verified your IC and driving license; you are not allowed to book cars.
+                </p>
+            </div>
+            {% endif %}
+
+            <button class="btn-primary">Save</button>
+        </div>
+
+    </form>
+
+    <div class="">
+        {% for booking in request.user.booking %}{% endfor %}
+    </div>
+</div>
+
+{% endblock main %}

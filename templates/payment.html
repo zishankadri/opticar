@@ -15,28 +15,65 @@
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
     {% endcompress %}
 
+
+    <!-- Include Leaflet CSS and JavaScript -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
 {% endblock head %}
 
 
 {% block main %}
 {% comment %} <div class="px-8 py-4"> {% endcomment %}
 <div 
-class="flex flex-wrap items-center justify-center p-8 bg-slate-50 min-h-[100vh] max-h-[100vh] overflow-auto">
-    <div class="bg-white p-4 py-12 rounded-lg flex gap-8 ">
-        <div class="h-32 max-h-32">
-            <img src="{{booking.car.image.url}}" alt="" class="h-full w-full object-contain">
+class="flex flex-wrap items-center justify-center p- min-h-[100vh] max-h-[100vh] overflow-auto">
+    <div class="p-8 rounded-lg flex items-center gap-8 ">
+        <div class="h-full px-8 lg:px-16">
+            <img src="{{booking.car.image.url}}" alt="" class="h-32 lg:h-48 w-full object-contain my-auto">
         </div>
-        <div class="flex flex-col justify-between text-gray-700">
-            <div class="flex gap-8">
-                Rental duration: 
-                <span>{{ total_hours }}</span>
+        <div class="flex flex-col gap-4 justify-between text-gray-200">
+            <!-- Map preview -->
+            <div>
+                <span class="">Location :</span>
+                <div id="map-container" class="map-container w-full rounded-xl overflow-hidden my-4 border border-slate-500">
+                    <!-- Map container -->
+                    <div id="map" class="" style="height: 300px;"></div>
+                </div>
             </div>
-            <div class="flex gap-8">
-                Total Rental Fee
-                <span>MYR {{ booking.car.price }} X {{ total_hours }} hours</span>
-                <span class="text-black">MYR {{ booking.total_price }}</span>
+            <div id="myDiv" class="flex flex-col gap-1 py-8 px-4">
+                <div class="flex gap-8">
+                    name:
+                    <span class="font-medium">{{ booking.car.name }}</span>
+                </div>
+                <div class="flex gap-8">
+                    MAKE_AND_MODEL:
+                    <span class="font-medium">{{ booking.car.make_and_model }}</span>
+                </div>
+                <div class="flex gap-8">
+                    car_type:
+                    <span class="font-medium">{{ booking.car.car_type }}</span>
+                </div>
+                <div class="flex gap-8">
+                    Booking Code:
+                    <span class="font-medium">{{ booking.id }}</span>
+                </div>
+                <div class="flex gap-8 border-t">
+                    Rental duration : 
+                    <span class="font-medium">{{ total_hours }} Hours</span>
+                </div>
+                <div class="flex gap-8">
+                    Total Rental Fee :
+                    <span>MYR {{ booking.car.price }} X {{ total_hours }} hours</span>
+                    <span class="font-medium">MYR {{ booking.total_price }}</span>
+                </div>
             </div>
-            <div class="self-end">
+            
+            
+            <div class="flex gap-4 self-end">
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn-primary" name="cash_payment">Cash payment</button>
+                </form>
                 {{ form.render }}
             </div>
             <!-- <button class="btn-primary w-full ">{{form}} Continue With Pay Pal</button> -->
@@ -44,5 +81,26 @@ class="flex flex-wrap items-center justify-center p-8 bg-slate-50 min-h-[100vh] 
     </div>
 </div>
 {% comment %} </div> {% endcomment %}
+
+<script>
+    let origin_cord = [{{booking.car.latitude}},{{booking.car.longitude}}]
+    {% comment %} let origin_cord = [-34.66,-58.43] {% endcomment %}
+
+    var map = L.map('map').setView([-34.66,-58.43], 4);
+
+    // Create markers
+    var marker_origin = L.marker(origin_cord, { draggable: false }).addTo(map);
+    {% comment %} marker_origin.bindPopup("").openPopup(); {% endcomment %}
+
+    map.fitBounds([marker_origin.getLatLng()])
+    map.setView(map.getCenter(), 10);  // Change zoom of the map
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+</script>
+
 
 {% endblock main %}
