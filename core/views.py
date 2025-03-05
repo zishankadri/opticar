@@ -17,6 +17,8 @@ from .forms import CustomPayPalPaymentsForm
 from accounts.models import UserAccount
 from paypal.standard.forms import PayPalPaymentsForm
 
+import logging
+logger = logging.getLogger('django')
 
 @login_required
 def home(request):
@@ -177,6 +179,7 @@ def bookings(request):
 
 @login_required
 def payment(request, booking_id):
+
     if request.method == 'POST':
         if "cash_payment" in request.POST:
             booking = Booking.objects.get(id=booking_id)
@@ -221,7 +224,7 @@ def payment(request, booking_id):
     
 def payment_successful_view(request):
     print("hello")
-    return render(request, "payment.html")
+    return redirect('/bookings/')
 
 
 def payment_failed_view(request):
@@ -313,3 +316,33 @@ def profile_page(request):
         request.user.save()
 
     return render(request, "profile.html")
+
+
+# views.py
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+@csrf_exempt  # Disable CSRF for API (ensure safety with tokens in production)
+def record_payment(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON data from the request
+            data = json.loads(request.body)
+            booking_id = data.get('booking_id')
+
+            if not booking_id:
+                return JsonResponse({'success': False, 'error': 'Missing booking_id'}, status=400)
+
+            booking = Booking.objects.get(id=booking_id)
+            booking.status = Booking.IN_PROGRESS
+            booking.payment_method = Booking.ONLINE
+            booking.save()
+
+            # Respond with success
+            return JsonResponse({'success': True, 'message': 'Payment recorded successfully!'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+    # If not a POST request, return an error response
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=400)

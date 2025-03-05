@@ -22,6 +22,8 @@ urlpatterns = [
     path('payment_successful/', views.payment_successful_view, name="payment_successful"),
     path('payment_failed/', views.payment_failed_view, name="payment_failed"),
 
+    path('api/record-payment/', views.record_payment, name='record_payment'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

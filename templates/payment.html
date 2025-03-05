@@ -75,12 +75,50 @@ class="flex flex-wrap items-center justify-center p- min-h-[100vh] max-h-[100vh]
                     <button class="btn-primary" name="cash_payment">Cash payment</button>
                 </form>
                 {{ form.render }}
+                <input type="hidden" id="booking-id" value="{{ booking.id }}">
             </div>
             <!-- <button class="btn-primary w-full ">{{form}} Continue With Pay Pal</button> -->
         </div>
     </div>
 </div>
-{% comment %} </div> {% endcomment %}
+
+<script>
+    const bookingId = document.getElementById('booking-id').value;
+    console.log(bookingId);
+    document.getElementById('paypal-button').addEventListener('click', async function () {
+    // Prepare data to send to your server
+    const data = {
+        csrfmiddlewaretoken: document.querySelector('[name="csrfmiddlewaretoken"]').value,
+        booking_id: bookingId,
+        // Add any other data you need to send
+    };
+
+    try {
+        // Send API request to your server
+        const response = await fetch('/api/record-payment/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            // If API call is successful, submit the form to PayPal
+            document.getElementById('paypal-form').submit();
+        } else {
+            // Handle errors
+            const errorData = await response.json();
+            console.error('API Error:', errorData);
+            alert('An error occurred while processing the payment.');
+        }
+        } catch (error) {
+            console.error('Request Failed:', error);
+            alert('Unable to connect to the server.');
+        }
+    });
+
+</script>
 
 <script>
     let origin_cord = [{{booking.car.latitude}},{{booking.car.longitude}}]

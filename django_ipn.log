@@ -1,0 +1,17 @@
+ipn_obj Received : PayPalIPN: 11
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4678
+Bad Request: /api/record-payment/
+"POST /api/record-payment/ HTTP/1.1" 400 49
+Bad Request: /api/record-payment/
+"POST /api/record-payment/ HTTP/1.1" 400 49
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4867
+Bad Request: /api/record-payment/
+"POST /api/record-payment/ HTTP/1.1" 400 49
+Bad Request: /api/record-payment/
+"POST /api/record-payment/ HTTP/1.1" 400 49
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4867
+Not Found: /favicon.ico
+"GET /favicon.ico HTTP/1.1" 404 4867

@@ -35,9 +35,9 @@ class CustomPayPalPaymentsForm(PayPalPaymentsForm):
             # `form.render` usage from template
             return format_html(
         
-            """<form action="{0}" method="post">
+            """<form id="paypal-form" action="{0}" method="post">
                 {1}
-                <button type="submit" class="btn-primary"> Continue on Paypal </button>
+                <button type="submit" class="btn-primary" id="paypal-button"> Continue on Paypal </button>
     
                 </form>""",
     

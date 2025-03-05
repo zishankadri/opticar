@@ -30,7 +30,10 @@ SECRET_KEY = 'django-insecure-)aya&201^g&0&r7kku#g_x_%165ss$e-eezetvz178&56(=mik
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = [
+    'https://4f76-2401-4900-1905-8253-3342-2d18-5c70-972.ngrok-free.app'
+]
 
 
 # Application definition
@@ -185,3 +188,24 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD') # This is the app password created from google account > security > app password
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'WARNING',  # Log level for file
+            'class': 'logging.FileHandler',  # Use FileHandler to log to a file
+            'filename': 'django_ipn.log',  # Log file name, it will be in your project root
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],  # Specify file handler here
+            'level': 'WARNING',  # Log level to capture INFO and above
+            'propagate': True,
+        },
+    },
+}
